@@ -1,0 +1,38 @@
+---
+
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/repo
+    machine:
+      image: ubuntu-2004:202104-01
+    steps:
+      - run:
+          name: Install Go
+          command: |
+            GO_VERSION=1.16.6
+            sudo apt-get update && sudo apt-get install -y --no-install-recommends g++ libc6-dev
+            sudo rm -rf /var/lib/apt/lists/*
+            curl -sSL "https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz" | sudo tar -xz -C /usr/local/
+            mkdir -p /home/circleci/go/bin
+            curl -sSL "https://github.com/gotestyourself/gotestsum/releases/download/v1.6.4/gotestsum_1.6.4_linux_amd64.tar.gz" | sudo tar -xz -C /usr/local/bin gotestsum
+            GOPATH=/home/circleci/go
+            PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+      - run:
+          name: Install Dependencies
+          command: go mod download
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "home/circleci/go/pkg/mod"
+      - run:
+          name: Run tests
+          command: |
+            mkdir -p /tmp/test-reports
+            gotestsum --junitfile /tmp/test-reports/unit-tests.xml
+      - store_test_results:
+          path: /tmp/test-reports
