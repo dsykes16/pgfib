@@ -12,29 +12,40 @@ const (
 	sqlInitPath = "../sql/fibonacci.sql"
 )
 
-type Fibonacci struct {
+type Fibonacci interface {
+	GetFib(n int) (result string, err error)
+	GetCacheSize() (size int, err error)
+	GetCacheSizeLT(end int) (size int, err error)
+	ClearCache() error
+}
+
+type PgFib struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) (fib *Fibonacci, err error) {
+func New(db *sql.DB) (fib Fibonacci, err error) {
 	err = db.Ping()
 	if err != nil {
 		return
 	}
 
-	fib = &Fibonacci{db: db}
-	err = fib.initDb()
+	err = initDb(db)
+	if err != nil {
+		return
+	}
+
+	fib = &PgFib{db: db}
 	return
 }
 
-func (f *Fibonacci) GetFib(n int) (result string, err error) {
+func (f *PgFib) GetFib(n int) (result string, err error) {
 	row := f.db.QueryRow(`SELECT get_fib($1);`, n)
 	result = ""
 	err = row.Scan(&result)
 	return
 }
 
-func (f *Fibonacci) GetCacheSize() (size int, err error) {
+func (f *PgFib) GetCacheSize() (size int, err error) {
 	row := f.db.QueryRow(`SELECT get_cache_size();`)
 	size = 0
 	err = row.Scan(&size)
@@ -42,19 +53,19 @@ func (f *Fibonacci) GetCacheSize() (size int, err error) {
 }
 
 // Returns the number of cache entries in the exclusive range from 0 to `end`
-func (f *Fibonacci) GetCacheSizeLT(end int) (size int, err error) {
+func (f *PgFib) GetCacheSizeLT(end int) (size int, err error) {
 	row := f.db.QueryRow(`SELECT get_cache_size_lt($1);`, end)
 	size = 0
 	err = row.Scan(&size)
 	return
 }
 
-func (f *Fibonacci) ClearCache() error {
+func (f *PgFib) ClearCache() error {
 	_, err := f.db.Exec(`TRUNCATE TABLE fibonacci;`)
 	return err
 }
 
-func (f *Fibonacci) initDb() error {
+func initDb(db *sql.DB) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -64,7 +75,7 @@ func (f *Fibonacci) initDb() error {
 	if err != nil {
 		return err
 	}
-	_, err = f.db.Exec(string(s))
+	_, err = db.Exec(string(s))
 	if err != nil {
 		return err
 	}

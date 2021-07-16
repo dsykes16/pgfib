@@ -19,7 +19,7 @@ var _ = Describe("Fibonacci Tests", func() {
 		pool  *dockertest.Pool
 		pgcon *dockertest.Resource
 		db    *sql.DB
-		f     *fibonacci.Fibonacci
+		f     fibonacci.Fibonacci
 	)
 
 	DescribeTable("calculates fibonacci numbers correctly",
