@@ -22,6 +22,30 @@ var _ = Describe("Fibonacci Tests", func() {
 		f     fibonacci.Fibonacci
 	)
 
+	Measure("Fib(500) performance with cold cache", func(b Benchmarker) {
+		runtime := b.Time("runtime", func() {
+			res, err := f.GetFib(500)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res).To(Equal("139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125"))
+		})
+		Expect(runtime.Seconds()).Should(BeNumerically("<", 5), "calculation should take less than 5 seconds")
+	}, 10)
+
+	Context("warm cache", func() {
+		JustBeforeEach(func() {
+			_, err := f.GetFib(500)
+			Expect(err).NotTo(HaveOccurred())
+		})
+		Measure("Fib(500) performance with warm cache", func(b Benchmarker) {
+			runtime := b.Time("runtime", func() {
+				res, err := f.GetFib(500)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(res).To(Equal("139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125"))
+			})
+			Expect(runtime.Seconds()).Should(BeNumerically("<", 5), "calculation should take less than 5 seconds")
+		}, 10)
+	})
+
 	DescribeTable("calculates fibonacci numbers correctly",
 		func(index int, expected string) {
 			res, err := f.GetFib(index)
@@ -63,12 +87,12 @@ var _ = Describe("Fibonacci Tests", func() {
 		Expect(res).To(Equal(1))
 	})
 
-	JustAfterEach(func() {
+	AfterEach(func() {
 		err := f.ClearCache()
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	JustBeforeEach(func() {
+	BeforeEach(func() {
 		var err error
 		f, err = fibonacci.New(db)
 		Expect(err).NotTo(HaveOccurred())
