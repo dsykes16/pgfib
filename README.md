@@ -69,3 +69,6 @@ Fibonacci Tests
       Average Time: 0.001s ± 0.000s
 ------------------------------
 ```
+Running Tests and Benchmarks
+----------------------------
+`make test` will run the full set of Ginkgo BDD and Bechmark test suites. `ginkgo` can be ran directly to provide highly granular control over specific tests and/or benchmarks (see: https://onsi.github.io/ginkgo/#the-ginkgo-cli). The test suites are also fully compatible with `gotestsum` which is used in the CircleCI build and test pipeline.
