@@ -94,7 +94,7 @@ var _ = Describe("Fibonacci Tests", func() {
 
 	BeforeEach(func() {
 		var err error
-		f, err = fibonacci.New(db)
+		f, err = fibonacci.New(db, "../sql/fibonacci.sql")
 		Expect(err).NotTo(HaveOccurred())
 	})
 

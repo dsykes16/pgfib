@@ -8,10 +8,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	sqlInitPath = "../sql/fibonacci.sql"
-)
-
 type Fibonacci interface {
 	GetFib(n int) (result string, err error)
 	GetCacheSize() (size int, err error)
@@ -23,13 +19,13 @@ type PgFib struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) (fib Fibonacci, err error) {
+func New(db *sql.DB, initFilePath string) (fib Fibonacci, err error) {
 	err = db.Ping()
 	if err != nil {
 		return
 	}
 
-	err = initDb(db)
+	err = initDb(db, initFilePath)
 	if err != nil {
 		return
 	}
@@ -65,13 +61,13 @@ func (f *PgFib) ClearCache() error {
 	return err
 }
 
-func initDb(db *sql.DB) error {
+func initDb(db *sql.DB, initFilePath string) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	s, err := os.ReadFile(path.Join(cwd, sqlInitPath))
+	s, err := os.ReadFile(path.Join(cwd, initFilePath))
 	if err != nil {
 		return err
 	}

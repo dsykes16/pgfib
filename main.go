@@ -20,7 +20,7 @@ func main() {
 		log.Fatalf("unable to connect to postgres: %s", err)
 	}
 
-	fib, err := fibonacci.New(db)
+	fib, err := fibonacci.New(db, config.SQLInitPath)
 	if err != nil {
 		log.Fatalf("unable to create fibonacci generator: %s", err)
 	}

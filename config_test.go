@@ -17,6 +17,7 @@ var _ = Describe("Server Initialization", func() {
 			DBName:        "pgfib",
 			DBSSL:         false,
 			ServerAddress: "0.0.0.0:5000",
+			SQLInitPath:   "./sql/fibonacci.sql",
 		}
 		config, err := LoadConfig("./")
 		Expect(err).NotTo(HaveOccurred())

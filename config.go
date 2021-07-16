@@ -14,10 +14,12 @@ type Config struct {
 	DBName        string `mapstructure:"DB_NAME"`
 	DBSSL         bool   `mapstructure:"DB_SSL"`
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	SQLInitPath   string `mapstructure:"SQL_BOOTSTRAP_FILE"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)
+	viper.AddConfigPath("/etc/pgfib/config/")
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 
