@@ -1,3 +1,5 @@
+CircleCI Build: [![CircleCI](https://circleci.com/gh/dsykes16/pgfib/tree/main.svg?style=svg)](https://circleci.com/gh/dsykes16/pgfib/tree/main)
+
 PgFib
 =====
 
