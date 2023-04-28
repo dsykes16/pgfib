@@ -3,7 +3,7 @@ CircleCI Build: [![CircleCI](https://circleci.com/gh/dsykes16/pgfib/tree/main.sv
 PgFib
 =====
 
-Fibonacci algorithm implemented server-side on Postgres with a REST API server powered by Go
+Fibonacci algorithm implemented server-side on Postgres with a web API server powered by Go
 
 All Fibonacci calculations and memoization is done in pure PL/pgSQL to take full advantage of Postgres and its performance capabilities. The upper-limit is Fib(4786) which, even with a cold cache, is amazingly performant. With the benefit of a warm cache, Fib(500) completes recursively in <0.01s. See performance benchmarks in the **Performance** section below.
 
